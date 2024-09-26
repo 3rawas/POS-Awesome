@@ -1,85 +1,32 @@
 <template>
   <div>
-    <v-card
-      class="selection mx-auto grey lighten-5 mt-3"
-      style="max-height: 75vh; height: 75vh"
-    >
-      <v-progress-linear
-        :active="loading"
-        :indeterminate="loading"
-        absolute
-        top
-        color="info"
-      ></v-progress-linear>
+    <v-card class="selection mx-auto grey lighten-5 mt-3" style="max-height: 75vh; height: 75vh">
+      <v-progress-linear :active="loading" :indeterminate="loading" absolute top color="info"></v-progress-linear>
       <v-row class="items px-2 py-1">
         <v-col class="pb-0 mb-2">
-          <v-text-field
-            dense
-            clearable
-            autofocus
-            outlined
-            color="primary"
-            :label="frappe._('Search Items')"
-            hint="Search by item code, serial number, batch no or barcode"
-            background-color="white"
-            hide-details
-            v-model="debounce_search"
-            @keydown.esc="esc_event"
-            @keydown.enter="search_onchange"
-            ref="debounce_search"
-          ></v-text-field>
+          <v-text-field dense clearable autofocus outlined color="primary" :label="frappe._('Search Items')"
+            hint="Search by item code, serial number, batch no or barcode" background-color="white" hide-details
+            v-model="debounce_search" @keydown.esc="esc_event" @keydown.enter="search_onchange"
+            ref="debounce_search"></v-text-field>
         </v-col>
         <v-col cols="3" class="pb-0 mb-2" v-if="pos_profile.posa_input_qty">
-          <v-text-field
-            dense
-            outlined
-            color="primary"
-            :label="frappe._('QTY')"
-            background-color="white"
-            hide-details
-            v-model.number="qty"
-            type="number"
-            @keydown.enter="enter_event"
-            @keydown.esc="esc_event"
-          ></v-text-field>
+          <v-text-field dense outlined color="primary" :label="frappe._('QTY')" background-color="white" hide-details
+            v-model.number="qty" type="number" @keydown.enter="enter_event" @keydown.esc="esc_event"></v-text-field>
         </v-col>
         <v-col cols="2" class="pb-0 mb-2" v-if="pos_profile.posa_new_line">
-          <v-checkbox
-            v-model="new_line"
-            color="accent"
-            value="true"
-            label="NLine"
-            dense
-            hide-details
-          ></v-checkbox>
+          <v-checkbox v-model="new_line" color="accent" value="true" label="NLine" dense hide-details></v-checkbox>
         </v-col>
         <v-col cols="12" class="pt-0 mt-0">
           <div fluid class="items" v-if="items_view == 'card'">
             <v-row dense class="overflow-y-auto" style="max-height: 67vh">
-              <v-col
-                v-for="(item, idx) in filtred_items"
-                :key="idx"
-                xl="2"
-                lg="3"
-                md="6"
-                sm="6"
-                cols="6"
-                min-height="50"
-              >
-                <v-card hover="hover" @click="add_item(item)">
-                  <v-img
-                    :src="
-                      item.image ||
-                      '/assets/posawesome/js/posapp/components/pos/placeholder-image.png'
-                    "
-                    class="white--text align-end"
-                    gradient="to bottom, rgba(0,0,0,0), rgba(0,0,0,0.4)"
-                    height="100px"
-                  >
-                    <v-card-text
-                      v-text="item.item_name"
-                      class="text-caption px-1 pb-0"
-                    ></v-card-text>
+              <v-col v-for="(item, idx) in filtred_items" :key="idx" xl="2" lg="3" md="6" sm="6" cols="6"
+                min-height="50">
+                <v-card hover="hover">
+                  <v-img :src="item.image ||
+                    '/assets/posawesome/js/posapp/components/pos/placeholder-image.png'
+                    " class="white--text align-end" gradient="to bottom, rgba(0,0,0,0), rgba(0,0,0,0.4)"
+                    height="100px">
+                    <v-card-text v-text="item.item_name" class="text-caption px-1 pb-0"></v-card-text>
                   </v-img>
                   <v-card-text class="text--primary pa-1">
                     <div class="text-caption primary--text">
@@ -98,20 +45,11 @@
           <div fluid class="items" v-if="items_view == 'list'">
             <div class="my-0 py-0 overflow-y-auto" style="max-height: 65vh">
               <template>
-                <v-data-table
-                  :headers="getItmesHeaders()"
-                  :items="filtred_items"
-                  item-key="item_code"
-                  class="elevation-1"
-                  :items-per-page="itemsPerPage"
-                  hide-default-footer
-                  @click:row="add_item"
-                >
+                <v-data-table :headers="getItmesHeaders()" :items="filtred_items" item-key="item_code"
+                  class="elevation-1" :items-per-page="itemsPerPage" hide-default-footer>
                   <template v-slot:item.rate="{ item }">
-                    <span class="primary--text"
-                      >{{ currencySymbol(item.currency) }}
-                      {{ formtCurrency(item.rate) }}</span
-                    >
+                    <span class="primary--text">{{ currencySymbol(item.currency) }}
+                      {{ formtCurrency(item.rate) }}</span>
                   </template>
                   <template v-slot:item.actual_qty="{ item }">
                     <span class="golden--text">{{
@@ -128,38 +66,22 @@
     <v-card class="cards mb-0 mt-3 pa-2 grey lighten-5">
       <v-row no-gutters align="center" justify="center">
         <v-col cols="12">
-          <v-select
-            :items="items_group"
-            :label="frappe._('Items Group')"
-            dense
-            outlined
-            hide-details
-            v-model="item_group"
-            v-on:change="search_onchange"
-          ></v-select>
+          <v-select :items="items_group" :label="frappe._('Items Group')" dense outlined hide-details
+            v-model="item_group" v-on:change="search_onchange"></v-select>
         </v-col>
         <v-col cols="3" class="mt-1">
-          <v-btn-toggle
-            v-model="items_view"
-            color="primary"
-            group
-            dense
-            rounded
-          >
+          <v-btn-toggle v-model="items_view" color="primary" group dense rounded>
             <v-btn small value="list">{{ __("List") }}</v-btn>
             <v-btn small value="card">{{ __("Card") }}</v-btn>
           </v-btn-toggle>
         </v-col>
         <v-col cols="4" class="mt-2">
-          <v-btn small block color="primary" text @click="show_coupons"
-            >{{ couponsCount }} {{ __("Coupons") }}</v-btn
-          >
+          <v-btn small block color="primary" text @click="show_coupons">{{ couponsCount }} {{ __("Coupons") }}</v-btn>
         </v-col>
         <v-col cols="5" class="mt-2">
-          <v-btn small block color="primary" text @click="show_offers"
-            >{{ offersCount }} {{ __("Offers") }} : {{ appliedOffersCount }}
-            {{ __("Applied") }}</v-btn
-          >
+          <v-btn small block color="primary" text @click="show_offers">{{ offersCount }} {{ __("Offers") }} : {{
+            appliedOffersCount }}
+            {{ __("Applied") }}</v-btn>
         </v-col>
       </v-row>
     </v-card>
@@ -366,7 +288,22 @@ export default {
       if (this.flags.serial_no) {
         new_item.to_set_serial_no = this.flags.serial_no;
       }
-      if (
+
+      element = this.search.toLowerCase().trim();
+      console.log(element, "this element");
+      let elements_regex = new RegExp(`.*${element.split("").join(".*")}.*`);
+      if (elements_regex.test(new_item.item_name.toLowerCase())) {
+        match = true;
+        const sortedBatches = new_item.batch_no_data.sort((a, b) => {
+          return new Date(a.manufacturing_date) - new Date(b.manufacturing_date);
+        });
+        if (sortedBatches.length > 0) {
+          const oldestBatch = sortedBatches[0];
+          new_item["to_set_batch_no"] = oldestBatch.batch_no;
+          new_item.batch_no = oldestBatch.batch_no;
+        }
+      }
+      else if (
         !new_item.to_set_batch_no &&
         new_item.has_batch_no &&
         this.pos_profile.posa_search_batch_no
@@ -381,6 +318,35 @@ export default {
       }
       if (this.flags.batch_no) {
         new_item.to_set_batch_no = this.flags.batch_no;
+      }
+      if (new_item.has_serial_no && !new_item.to_set_serial_no) {
+
+        evntBus.$emit("show_mesage", {
+          text: __(`This item has {0} serial no`, [
+            new_item.item_name
+          ]),
+          color: "error",
+
+        });
+        return
+      }
+
+      if (new_item.to_set_serial_no) {
+        frappe.call({
+          method: 'posawesome.posawesome.api.posapp.serial_custom_api',
+          args: {
+            serial_no: new_item.to_set_serial_no,
+            warehouse: this.pos_profile.warehouse
+          },
+          async: false,
+          callback: function (r) {
+            if (r.message) {
+              new_item["batch_no"] = r.message.name;
+              new_item["actual_qty"] = r.message.batch_qty,
+              new_item.rate = r.message.posa_batch_price
+            }
+          }
+        });
       }
       if (match) {
         this.add_item(new_item);
@@ -591,12 +557,28 @@ export default {
                     found = true;
                     this.flags.serial_no = null;
                     this.flags.serial_no = this.search;
+                    frappe.call({
+                      method: 'posawesome.posawesome.api.posapp.serial_custom_api',
+                      args: {
+                        serial_no: this.search,
+                        warehouse: this.pos_profile.warehouse
+                      },
+                      async: false,
+                      callback: function (r) {
+                        if (r.message) {
+                          item.actual_qty = r.message.batch_qty
+                          item.rate = r.message.posa_batch_price
+                        }
+                      }
+                    });
                     break;
                   }
                 }
                 return found;
               });
             }
+
+
             if (
               filtred_list.length == 0 &&
               this.pos_profile.posa_search_batch_no
@@ -605,9 +587,24 @@ export default {
                 let found = false;
                 for (let element of item.batch_no_data) {
                   if (element.batch_no == this.search) {
+                    item.batch_no = this.search
                     found = true;
                     this.flags.batch_no = null;
                     this.flags.batch_no = this.search;
+                    frappe.call({
+                      method: 'posawesome.posawesome.api.posapp.batch_custom_api',
+                      args: {
+                        batch_no: this.search,
+                        warehouse: this.pos_profile.warehouse
+                      },
+                      async: false,
+                      callback: function (r) {
+                        if (r.message) {
+                          item.actual_qty = r.message.batch_qty
+                          item.rate = r.message.posa_batch_price
+                        }
+                      }
+                    });
                     break;
                   }
                 }
@@ -639,7 +636,7 @@ export default {
   },
 
   created: function () {
-    this.$nextTick(function () {});
+    this.$nextTick(function () { });
     evntBus.$on("register_pos_profile", (data) => {
       this.pos_profile = data.pos_profile;
       this.get_items();
