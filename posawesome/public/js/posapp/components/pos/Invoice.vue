@@ -933,14 +933,14 @@ export default {
           item.stock_qty = item.serial_no_selected.length;
       }});
       this.redeem_customer_credit = false;
-      if (!frappe.user_roles.includes("POS Cash")) {
+      //if (!frappe.user_roles.includes("POS Cash")) {
 
-        evntBus.$emit("show_mesage", {
-          text: __(`Access Restricted`),
-          color: "error",
-        });
-        return;
-      }
+      //  evntBus.$emit("show_mesage", {
+      //    text: __(`Access Restricted`),
+      //    color: "error",
+       // });
+      //  return;
+      //}
       if (!this.customer) {
         evntBus.$emit("show_mesage", {
           text: __(`There is no Customer !`),
